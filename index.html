@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dasbor Pantauan Patroli & Pelanggaran ITOS - Butler Management Property</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-base: #F2F2F7;
+      --bg-surface: rgba(255, 255, 255, 0.9);
+      --bg-card: #FFFFFF;
+      --bg-card-border: rgba(0, 0, 0, 0.08);
+      --text-main: #1C1C1E;
+      --text-muted: #8E8E93;
+      --accent-pink: #FF2D55;
+      --accent-blue: #007AFF;
+      --accent-emerald: #34C759;
+      --accent-rose: #FF3B30;
+      --radius-sm: 12px;
+      --radius-md: 20px;
+      --radius-lg: 28px;
+      --font-apple: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Plus Jakarta Sans", sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-apple);
+      letter-spacing: -0.015em;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 20px 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .dasbor-container {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* HEADER */
+    .sys-header {
+      background: var(--bg-surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .sys-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .sys-logo-img {
+      height: 42px;
+      width: auto;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+
+    .sys-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .sys-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-sync {
+      background: var(--accent-pink);
+      color: #FFF;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 45, 85, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-sync:active { transform: scale(0.95); }
+
+    /* TAB NAVIGATION */
+    .tab-bar {
+      display: flex;
+      gap: 10px;
+      background: rgba(0,0,0,0.04);
+      padding: 6px;
+      border-radius: var(--radius-sm);
+      width: fit-content;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: #FFFFFF;
+      color: var(--text-main);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+
+    /* FILTERS */
+    .filter-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filter-input, .filter-select {
+      flex: 1;
+      min-width: 180px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(0,0,0,0.1);
+      background: #F9F9FB;
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+    }
+
+    /* VIEW SECTIONS */
+    .view-section { display: none; flex-direction: column; gap: 20px; }
+    .view-section.active { display: flex; }
+
+    /* GALERI FOTO GRID */
+    .galeri-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .card-laporan {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s;
+    }
+
+    .card-laporan:hover { transform: translateY(-4px); }
+
+    .card-photo-box {
+      width: 100%;
+      height: 220px;
+      background: #1C1C1E;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .card-photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      cursor: pointer;
+    }
+
+    .no-photo-badge {
+      color: rgba(255,255,255,0.4);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .badge-type {
+      align-self: flex-start;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      background: rgba(0, 122, 255, 0.1);
+      color: var(--accent-blue);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .card-meta {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .card-notes {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      background: rgba(0,0,0,0.03);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-top: 4px;
+      border-left: 3px solid var(--accent-pink);
+    }
+
+    .card-coords {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent-emerald);
+      background: rgba(52, 199, 89, 0.1);
+      padding: 6px 10px;
+      border-radius: 8px;
+      margin-top: 4px;
+      word-break: break-all;
+    }
+
+    /* TABEL PELANGGARAN */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background: #F9F9FB;
+      color: var(--text-muted);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 11px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--bg-card-border);
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--bg-card-border);
+      font-weight: 600;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .badge-violation {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(255, 59, 48, 0.1);
+      color: var(--accent-rose);
+    }
+
+    .sys-footer {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 20px 0;
+      margin-top: auto;
+    }
+
+    /* LIGHTBOX MODAL */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(10px);
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .lightbox.active { display: flex; }
+
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+
+<div class="dasbor-container">
+  <!-- HEADER -->
+  <div class="sys-header">
+    <div class="sys-brand">
+      <img src="butler.png" alt="Butler Logo" class="sys-logo-img" onerror="this.style.display='none'">
+      <div>
+        <div class="sys-title">Dasbor Pantauan Patroli Security</div>
+        <div class="sys-subtitle">Butler Management Property (apartments)</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-sync" onclick="loadAllSheetData()">Perbarui Data</button>
+    </div>
+  </div>
+
+  <!-- TAB NAVIGASI -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('patroli', this)">Galeri & Laporan Patroli</button>
+    <button class="tab-btn" onclick="switchTab('pelanggaran', this)">Log Pelanggaran & Lockout Area</button>
+  </div>
+
+  <!-- FILTER -->
+  <div class="filter-bar">
+    <input type="text" id="search-nama" class="filter-input" placeholder="Cari nama petugas..." oninput="applyFilters()">
+    <select id="filter-property" class="filter-select" onchange="applyFilters()">
+      <option value="">Semua Properti</option>
+      <option value="Grand Apartments">Grand Apartments</option>
+      <option value="Premier, Deluxe">Premier, Deluxe</option>
+      <option value="Horizon Cemagi Apartments">Horizon Cemagi Apartments</option>
+    </select>
+  </div>
+
+  <!-- SECTION 1: GALERI PATROLI -->
+  <div id="section-patroli" class="view-section active">
+    <div id="galeri-container" class="galeri-grid">
+      <div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted); font-weight:600;">
+        Mengambil data patroli dari Google Sheet...
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: TABEL PELANGGARAN -->
+  <div id="section-pelanggaran" class="view-section">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Waktu (Timestamp)</th>
+            <th>Nama Petugas</th>
+            <th>Shift</th>
+            <th>Properti</th>
+            <th>Jarak Pelanggaran</th>
+            <th>Alasan Meninggalkan Area</th>
+            <th>Password Terpakai</th>
+          </tr>
+        </thead>
+        <tbody id="pelanggaran-tbody">
+          <tr>
+            <td colspan="7" style="text-align:center; padding: 40px; color: var(--text-muted);">Mengambil data pelanggaran...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="sys-footer">
+    tukang koding: Nino Paulus | Copyright Oktober 2026
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="Foto Full">
+</div>
+
+<script>
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwN1mvMWL_aL9Ta_MNkCucx0CNgRxVcsQUx784w_BTEudw-PB6vCM-4XFacZOr7jbBEtw/exec";
+
+  let rawPatroliLogs = [];
+  let rawPelanggaranLogs = [];
+
+  window.onload = () => {
+    loadAllSheetData();
+  };
+
+  async function loadAllSheetData() {
+    try {
+      const res = await fetch(GOOGLE_SCRIPT_URL);
+      const data = await res.json();
+
+      if (data && typeof data === 'object') {
+        rawPatroliLogs = Array.isArray(data.patroli) ? data.patroli : [];
+        rawPelanggaranLogs = Array.isArray(data.pelanggaran) ? data.pelanggaran : [];
+      } else if (Array.isArray(data)) {
+        rawPatroliLogs = data;
+        rawPelanggaranLogs = [];
+      }
+
+      applyFilters();
+    } catch (e) {
+      console.error(e);
+      document.getElementById('galeri-container').innerHTML = `<div style="grid-column: 1/-1; text-align:center; color: var(--accent-rose);">Terjadi kesalahan koneksi saat memuat data.</div>`;
+    }
+  }
+
+  function switchTab(tabName, btnElement) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+
+    btnElement.classList.add('active');
+    document.getElementById(`section-${tabName}`).classList.add('active');
+  }
+
+  function applyFilters() {
+    const searchNama = document.getElementById('search-nama').value.toLowerCase();
+    const filterProperty = document.getElementById('filter-property').value;
+
+    const filteredPatroli = rawPatroliLogs.filter(item => {
+      const matchNama = (item.nama || '').toLowerCase().includes(searchNama);
+      const matchProperty = filterProperty === '' || item.property === filterProperty;
+      return matchNama && matchProperty;
+    });
+    renderPatroli(filteredPatroli);
+
+    const filteredPelanggaran = rawPelanggaranLogs.filter(item => {
+      const matchNama = (item.nama || '').toLowerCase().includes(searchNama);
+      const matchProperty = filterProperty === '' || item.property === filterProperty;
+      return matchNama && matchProperty;
+    });
+    renderPelanggaran(filteredPelanggaran);
+  }
+
+  function renderPatroli(logs) {
+    const container = document.getElementById('galeri-container');
+    container.innerHTML = '';
+
+    if (logs.length === 0) {
+      container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Tidak ada data laporan patroli ditemukan.</div>`;
+      return;
+    }
+
+    logs.forEach(log => {
+      const card = document.createElement('div');
+      card.className = 'card-laporan';
+
+      const hasPhoto = log.foto && log.foto.startsWith('data:image');
+      const photoHtml = hasPhoto 
+        ? `<img src="${log.foto}" alt="Foto Patroli" onclick="openLightbox('${log.foto}')">`
+        : `<div class="no-photo-badge">Tidak ada dokumen foto</div>`;
+
+      const dateObj = new Date(log.timestamp);
+      const formattedTime = isNaN(dateObj.getTime()) ? log.timestamp : dateObj.toLocaleString('id-ID');
+
+      const patrolNotes = log.catatan_patroli || log.catatan || '-';
+      const showNotes = patrolNotes && patrolNotes !== '-' && patrolNotes !== 'undefined';
+
+      card.innerHTML = `
+        <div class="card-photo-box">
+          ${photoHtml}
+        </div>
+        <div class="card-body">
+          <span class="badge-type">${log.tipe || 'Aktivitas'}</span>
+          <div class="card-title">${log.nama || 'Petugas'}</div>
+          <div class="card-meta">
+            🏢 Properti: ${log.property || '-'}<br>
+            ⏰ Shift: ${log.shift || '-'}<br>
+            📅 ${formattedTime}
+          </div>
+          ${showNotes ? `<div class="card-notes"><b>Notes Patroli:</b> ${patrolNotes}</div>` : ''}
+          ${log.koordinat ? `<div class="card-coords">📍 GPS: ${log.koordinat}</div>` : ''}
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+  }
+
+  function renderPelanggaran(logs) {
+    const tbody = document.getElementById('pelanggaran-tbody');
+    tbody.innerHTML = '';
+
+    if (logs.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 40px; color: var(--text-muted);">Tidak ada data pelanggaran / lockout area.</td></tr>`;
+      return;
+    }
+
+    logs.forEach(log => {
+      const dateObj = new Date(log.timestamp);
+      const formattedTime = isNaN(dateObj.getTime()) ? log.timestamp : dateObj.toLocaleString('id-ID');
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${formattedTime}</td>
+        <td><b>${log.nama || '-'}</b></td>
+        <td>${log.shift || '-'}</td>
+        <td>${log.property || '-'}</td>
+        <td><span class="badge-violation">${log.jarak || '-'}</span></td>
+        <td>${log.alasan || '-'}</td>
+        <td><code>${log.password || '-'}</code></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('active');
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+  }
+</script>
+</body>
+</html>
