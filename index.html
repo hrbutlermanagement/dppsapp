@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Dasbor Pantauan Patroli ITOS - Butler Management Property</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+          --bg-base: #F2F2F7;
+          --bg-surface: rgba(255, 255, 255, 0.85);
+          --bg-card: #FFFFFF;
+          --bg-card-border: rgba(0, 0, 0, 0.06);
+          --text-main: #1C1C1E;
+          --text-muted: #8E8E93;
+          --accent-pink: #FF2D55;
+          --accent-blue: #007AFF;
+          --accent-emerald: #34C759;
+          --accent-rose: #FF3B30;
+          --radius-sm: 12px;
+          --radius-md: 16px;
+          --radius-lg: 24px;
+          --font-apple: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Plus Jakarta Sans", sans-serif;
+          --font-mono: 'JetBrains Mono', monospace;
+          --shadow-ios: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          font-family: var(--font-apple);
+          letter-spacing: -0.02em;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+          background-color: var(--bg-base);
+          color: var(--text-main);
+          min-height: 100vh;
+          padding: calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 20px) 12px;
+          display: flex;
+          justify-content: center;
+          overflow-x: hidden;
+        }
+
+        .dasbor-container {
+          width: 100%;
+          max-width: 1200px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        /* iOS Header Glass */
+        .sys-header {
+          background: var(--bg-surface);
+          backdrop-filter: blur(25px);
+          -webkit-backdrop-filter: blur(25px);
+          border: 1px solid rgba(255, 255, 255, 0.9);
+          border-radius: var(--radius-lg);
+          padding: 12px 16px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          box-shadow: var(--shadow-ios);
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+
+        .sys-brand {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .sys-logo-img {
+          height: 34px;
+          width: auto;
+          object-fit: contain;
+          border-radius: 8px;
+        }
+
+        .sys-title {
+          font-size: 15px;
+          font-weight: 800;
+          color: var(--text-main);
+          line-height: 1.2;
+        }
+
+        .sys-subtitle {
+          font-size: 11px;
+          color: var(--text-muted);
+          font-weight: 600;
+          margin-top: 1px;
+        }
+
+        .header-actions {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          width: 100%;
+          justify-content: flex-end;
+        }
+
+        @media (min-width: 600px) {
+          .header-actions { width: auto; }
+        }
+
+        .btn-ios {
+          border: none;
+          padding: 8px 14px;
+          border-radius: 16px;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: transform 0.15s ease, opacity 0.15s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+        }
+
+        .btn-ios:active {
+          transform: scale(0.94);
+          opacity: 0.85;
+        }
+
+        .btn-sync {
+          background: var(--accent-pink);
+          color: #FFF;
+          box-shadow: 0 3px 10px rgba(255, 45, 85, 0.25);
+        }
+
+        .btn-pwd {
+          background: var(--accent-rose);
+          color: #FFF;
+          box-shadow: 0 3px 10px rgba(255, 59, 48, 0.25);
+        }
+
+        /* Widget Statistik Futuristik iOS */
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+        }
+
+        .stat-card {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-border);
+          border-radius: var(--radius-md);
+          padding: 10px 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          box-shadow: var(--shadow-ios);
+        }
+
+        .stat-label {
+          font-size: 9.5px;
+          font-weight: 700;
+          color: var(--text-muted);
+          text-transform: uppercase;
+        }
+
+        .stat-value {
+          font-size: 18px;
+          font-weight: 800;
+          color: var(--text-main);
+          font-family: var(--font-mono);
+        }
+
+        /* iOS Segmented Control Tab */
+        .tab-bar-ios {
+          display: flex;
+          background: rgba(120, 120, 128, 0.12);
+          padding: 3px;
+          border-radius: 12px;
+          width: 100%;
+          position: relative;
+        }
+
+        .tab-btn {
+          flex: 1;
+          padding: 8px 10px;
+          border-radius: 9px;
+          font-size: 12px;
+          font-weight: 700;
+          border: none;
+          cursor: pointer;
+          background: transparent;
+          color: var(--text-muted);
+          transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+          text-align: center;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .tab-btn.active {
+          background: #FFFFFF;
+          color: var(--text-main);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Filter Section iOS */
+        .filter-bar {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-border);
+          border-radius: var(--radius-md);
+          padding: 10px;
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          box-shadow: var(--shadow-ios);
+        }
+
+        .filter-input, .filter-select {
+          flex: 1;
+          min-width: 110px;
+          padding: 8px 10px;
+          border-radius: 10px;
+          border: 1px solid rgba(0,0,0,0.08);
+          background: #F2F2F7;
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--text-main);
+          outline: none;
+          -webkit-appearance: none;
+        }
+
+        .view-section { display: none; flex-direction: column; gap: 12px; }
+        .view-section.active { display: flex; }
+
+        /* Galeri Grid Cards - Dibuat Rapat & Kompatibel untuk HP */
+        .galeri-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr); /* 2 Kolom Berjajar di Layar HP */
+          gap: 10px;
+        }
+
+        @media (min-width: 768px) {
+          .galeri-grid {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Auto Sesuaikan di Tablet/PC */
+          }
+        }
+
+        .card-laporan {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-border);
+          border-radius: var(--radius-md);
+          overflow: hidden;
+          box-shadow: var(--shadow-ios);
+          display: flex;
+          flex-direction: column;
+          transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .card-laporan:active { transform: scale(0.97); }
+
+        .card-photo-box {
+          width: 100%;
+          height: 125px; /* Lebih Pendek & Ringkas */
+          background: #1C1C1E;
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+
+        .card-photo-box img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          cursor: pointer;
+        }
+
+        .no-photo-badge {
+          color: rgba(255,255,255,0.4);
+          font-size: 10.5px;
+          font-weight: 600;
+          text-align: center;
+          padding: 8px;
+        }
+
+        .card-body {
+          padding: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        .badge-type {
+          align-self: flex-start;
+          font-size: 8.5px;
+          font-weight: 800;
+          padding: 2px 6px;
+          border-radius: 10px;
+          text-transform: uppercase;
+          background: rgba(0, 122, 255, 0.1);
+          color: var(--accent-blue);
+        }
+
+        .card-title {
+          font-size: 13px;
+          font-weight: 800;
+          color: var(--text-main);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .card-meta {
+          font-size: 10.5px;
+          font-weight: 600;
+          color: var(--text-muted);
+          line-height: 1.4;
+        }
+
+        .card-notes {
+          font-size: 11px;
+          font-weight: 600;
+          color: var(--text-main);
+          background: rgba(0,0,0,0.03);
+          padding: 6px 8px;
+          border-radius: 8px;
+          margin-top: 2px;
+          border-left: 2px solid var(--accent-pink);
+          max-height: 52px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .card-coords {
+          font-family: var(--font-mono);
+          font-size: 9.5px;
+          color: var(--accent-emerald);
+          background: rgba(52, 199, 89, 0.1);
+          padding: 4px 6px;
+          border-radius: 6px;
+          margin-top: 2px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        /* Navigasi Paginasi */
+        .pagination-bar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 10px 14px;
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-border);
+          border-radius: var(--radius-md);
+          box-shadow: var(--shadow-ios);
+        }
+
+        .page-info {
+          font-size: 11px;
+          font-weight: 700;
+          color: var(--text-muted);
+        }
+
+        .page-btns {
+          display: flex;
+          gap: 6px;
+        }
+
+        .btn-page {
+          background: #F2F2F7;
+          border: 1px solid rgba(0,0,0,0.06);
+          padding: 5px 12px;
+          border-radius: 8px;
+          font-size: 11px;
+          font-weight: 700;
+          cursor: pointer;
+          color: var(--text-main);
+        }
+
+        .btn-page:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
+        /* Tabel Mobile Optimized */
+        .table-container {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-border);
+          border-radius: var(--radius-md);
+          overflow-x: auto;
+          box-shadow: var(--shadow-ios);
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+          font-size: 12px;
+        }
+
+        th {
+          background: #F9F9FB;
+          color: var(--text-muted);
+          font-weight: 800;
+          text-transform: uppercase;
+          font-size: 10px;
+          padding: 10px 12px;
+          border-bottom: 1px solid var(--bg-card-border);
+        }
+
+        td {
+          padding: 10px 12px;
+          border-bottom: 1px solid var(--bg-card-border);
+          font-weight: 600;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        .badge-violation {
+          font-size: 10px;
+          font-weight: 800;
+          padding: 3px 8px;
+          border-radius: 12px;
+          background: rgba(255, 59, 48, 0.1);
+          color: var(--accent-rose);
+        }
+
+        .sys-footer {
+          text-align: center;
+          font-size: 10.5px;
+          font-weight: 600;
+          color: var(--text-muted);
+          padding: 12px 0;
+          margin-top: auto;
+        }
+
+        /* Lightbox iOS Blur */
+        .lightbox {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.85);
+          backdrop-filter: blur(15px);
+          -webkit-backdrop-filter: blur(15px);
+          z-index: 99999;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        }
+
+        .lightbox.active { display: flex; }
+
+        .lightbox img {
+          max-width: 92vw;
+          max-height: 85vh;
+          border-radius: var(--radius-sm);
+          box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+        }
+
+        /* Modal iOS Popover */
+        .pwd-modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.4);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          z-index: 999999;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        }
+
+        .pwd-modal-overlay.active { display: flex; }
+
+        .pwd-modal-card {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(20px);
+          border-radius: var(--radius-lg);
+          padding: 20px;
+          width: 100%;
+          max-width: 340px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          animation: iosPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+        }
+
+        @keyframes iosPop {
+          from { transform: scale(0.88); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+
+        .pwd-title {
+          font-size: 16px;
+          font-weight: 800;
+          color: var(--text-main);
+        }
+
+        .pwd-desc {
+          font-size: 11.5px;
+          color: var(--text-muted);
+          line-height: 1.4;
+          font-weight: 600;
+        }
+
+        .pwd-display-box {
+          background: #F2F2F7;
+          border: 1px solid var(--bg-card-border);
+          border-radius: var(--radius-sm);
+          padding: 14px;
+          font-family: var(--font-mono);
+          font-size: 18px;
+          font-weight: 800;
+          color: var(--accent-rose);
+          letter-spacing: 0.5px;
+          word-break: break-all;
+          user-select: all;
+        }
+
+        .pwd-actions {
+          display: flex;
+          gap: 8px;
+          margin-top: 2px;
+        }
+
+        .btn-pwd-copy {
+          flex: 1;
+          background: var(--accent-blue);
+          color: #FFF;
+          border: none;
+          padding: 10px;
+          border-radius: 12px;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+
+        .btn-pwd-close {
+          background: #E5E5EA;
+          color: var(--text-main);
+          border: none;
+          padding: 10px 16px;
+          border-radius: 12px;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+
+        .btn-pwd-copy:active, .btn-pwd-close:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+
+<div class="dasbor-container">
+    <!-- Header -->
+    <div class="sys-header">
+        <div class="sys-brand">
+            <img src="butler.png" alt="Butler Logo" class="sys-logo-img" onerror="this.style.display='none'">
+            <div>
+                <div class="sys-title">Dasbor Pantauan Patroli</div>
+                <div class="sys-subtitle">Butler Management Property</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-ios btn-pwd" onclick="generateAndShowPassword()">Password Indisipliner</button>
+            <button class="btn-ios btn-sync" onclick="loadAllSheetData()">Perbarui Data</button>
+        </div>
+    </div>
+
+    <!-- Widget Ringkasan Statistik Futuristik -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">Total Laporan</span>
+            <span id="stat-total" class="stat-value">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Petugas Aktif</span>
+            <span id="stat-petugas" class="stat-value">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Pelanggaran</span>
+            <span id="stat-pelanggaran" class="stat-value" style="color: var(--accent-rose);">0</span>
+        </div>
+    </div>
+
+    <!-- Segmented Tab Bar ala iOS -->
+    <div class="tab-bar-ios">
+        <button class="tab-btn active" onclick="switchTab('patroli', this)">Laporan Dokumentasi Patroli</button>
+        <button class="tab-btn" onclick="switchTab('pelanggaran', this)">Catatan Pelanggaran</button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <select id="filter-nama" class="filter-select" onchange="applyFilters()">
+            <option value="">Semua Nama Petugas</option>
+        </select>
+
+        <input type="date" id="filter-tanggal" class="filter-input" onchange="applyFilters()">
+
+        <select id="filter-property" class="filter-select" onchange="applyFilters()">
+            <option value="">Semua Properti</option>
+            <option value="Grand Apartments">Grand Apartments</option>
+            <option value="Premier, Deluxe">Premier, Deluxe</option>
+            <option value="Horizon Cemagi Apartments">Horizon Cemagi Apartments</option>
+        </select>
+    </div>
+
+    <!-- Tab Patroli -->
+    <div id="section-patroli" class="view-section active">
+        <div id="galeri-container" class="galeri-grid">
+            <div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted); font-weight:600;">
+                Memuat data patroli...
+            </div>
+        </div>
+        
+        <!-- Paginasi Patroli -->
+        <div class="pagination-bar">
+            <span id="page-info-patroli" class="page-info">Halaman 1</span>
+            <div class="page-btns">
+                <button id="btn-prev-patroli" class="btn-page" onclick="changePage(-1)" disabled>Sebaliknya</button>
+                <button id="btn-next-patroli" class="btn-page" onclick="changePage(1)" disabled>Berikutnya</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Pelanggaran -->
+    <div id="section-pelanggaran" class="view-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>Waktu</th>
+                    <th>Nama Petugas</th>
+                    <th>Shift</th>
+                    <th>Properti</th>
+                    <th>Jarak</th>
+                    <th>Alasan</th>
+                    <th>Password</th>
+                </tr>
+                </thead>
+                <tbody id="pelanggaran-tbody">
+                <tr>
+                    <td colspan="7" style="text-align:center; padding: 40px; color: var(--text-muted);">Memuat data pelanggaran...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="sys-footer">
+        tukang koding: Nino Paulus | Copyright Oktober 2026
+    </div>
+</div>
+
+<!-- Lightbox Modal -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="Foto Full">
+</div>
+
+<!-- Password Modal -->
+<div id="pwd-modal" class="pwd-modal-overlay">
+    <div class="pwd-modal-card">
+        <div class="pwd-title">Password Indisipliner</div>
+        <div class="pwd-desc">Berikan password acak ini kepada personel yang terindikasi melanggar/meninggalkan area:</div>
+        <div id="pwd-display" class="pwd-display-box">-</div>
+        <div class="pwd-actions">
+            <button id="btn-copy-pwd" class="btn-pwd-copy" onclick="copyPasswordToClipboard()">Salin Password</button>
+            <button class="btn-pwd-close" onclick="closePasswordModal()">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2bEX5peHX--4xoYbpY3jsgkvMJwaaa8qzrxQhQcREZnpXSsxeQ2AL5w-8nZyH1HI3/exec";
+
+    const PASSWORD_LIST = [
+      "Безопасность", "Bezopasnost", "Патрулирование", "Patrulirovanie",
+      "Дисциплина", "Distsiplina", "Контроль", "Kontrol", "Охрана", "Okhrana",
+      "Порядок", "Poryadok", "Ответственность", "Otvetsvennost"
+    ];
+
+    let rawPatroliLogs = [];
+    let rawPelanggaranLogs = [];
+    let currentFilteredPatroli = [];
+    
+    // Paginasi Setup (24 Item Per Halaman)
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 24;
+
+    window.onload = () => {
+      loadAllSheetData();
+    };
+
+    async function loadAllSheetData() {
+      document.getElementById('galeri-container').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted); font-weight:600;">Memuat data patroli dari Google Sheet...</div>`;
+      document.getElementById('pelanggaran-tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 40px; color: var(--text-muted);">Memuat data pelanggaran...</td></tr>`;
+
+      try {
+        const res = await fetch(GOOGLE_SCRIPT_URL);
+        const data = await res.json();
+
+        if (data && typeof data === 'object') {
+          rawPatroliLogs = Array.isArray(data.patroli) ? data.patroli : [];
+          rawPelanggaranLogs = Array.isArray(data.pelanggaran) ? data.pelanggaran : [];
+        } else if (Array.isArray(data)) {
+          rawPatroliLogs = data;
+          rawPelanggaranLogs = [];
+        }
+
+        updateHeaderStats();
+        populateNamaDropdown();
+        applyFilters();
+      } catch (e) {
+        console.error(e);
+        document.getElementById('galeri-container').innerHTML = `<div style="grid-column: 1/-1; text-align:center; color: var(--accent-rose); font-weight:600;">Gagal memuat data dari Google Sheet.</div>`;
+        document.getElementById('pelanggaran-tbody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 40px; color: var(--accent-rose);">Gagal memuat data.</td></tr>`;
+      }
+    }
+
+    function updateHeaderStats() {
+      document.getElementById('stat-total').innerText = rawPatroliLogs.length;
+      
+      const uniqueNames = new Set(rawPatroliLogs.map(i => (i.nama || '').trim()).filter(n => n && n !== '-'));
+      document.getElementById('stat-petugas').innerText = uniqueNames.size;
+      
+      document.getElementById('stat-pelanggaran').innerText = rawPelanggaranLogs.length;
+    }
+
+    function populateNamaDropdown() {
+      const selectNama = document.getElementById('filter-nama');
+      const selectedVal = selectNama.value;
+
+      const namaSet = new Set();
+      rawPatroliLogs.forEach(i => { if (i.nama && i.nama !== '-') namaSet.add(i.nama.trim()); });
+      rawPelanggaranLogs.forEach(i => { if (i.nama && i.nama !== '-') namaSet.add(i.nama.trim()); });
+
+      const namaList = Array.from(namaSet).sort();
+
+      selectNama.innerHTML = '<option value="">Semua Nama Petugas</option>';
+      namaList.forEach(nama => {
+        const opt = document.createElement('option');
+        opt.value = nama;
+        opt.textContent = nama;
+        selectNama.appendChild(opt);
+      });
+
+      selectNama.value = selectedVal;
+    }
+
+    function switchTab(tabName, btnElement) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+
+      btnElement.classList.add('active');
+      document.getElementById(`section-${tabName}`).classList.add('active');
+    }
+
+    function applyFilters() {
+      const filterNama = document.getElementById('filter-nama').value;
+      const filterTanggal = document.getElementById('filter-tanggal').value;
+      const filterProperty = document.getElementById('filter-property').value;
+
+      const sortedPatroli = [...rawPatroliLogs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      const sortedPelanggaran = [...rawPelanggaranLogs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+      currentFilteredPatroli = sortedPatroli.filter(item => {
+        const matchNama = filterNama === '' || (item.nama || '').trim() === filterNama;
+        const matchProperty = filterProperty === '' || item.property === filterProperty;
+
+        let matchTanggal = true;
+        if (filterTanggal && item.timestamp) {
+          const itemDate = new Date(item.timestamp);
+          if (!isNaN(itemDate.getTime())) {
+            const year = itemDate.getFullYear();
+            const month = String(itemDate.getMonth() + 1).padStart(2, '0');
+            const day = String(itemDate.getDate()).padStart(2, '0');
+            const formattedItemDate = `${year}-${month}-${day}`;
+            matchTanggal = formattedItemDate === filterTanggal;
+          }
+        }
+
+        return matchNama && matchProperty && matchTanggal;
+      });
+      
+      currentPage = 1;
+      renderPatroliWithPagination();
+
+      const filteredPelanggaran = sortedPelanggaran.filter(item => {
+        const matchNama = filterNama === '' || (item.nama || '').trim() === filterNama;
+        const matchProperty = filterProperty === '' || item.property === filterProperty;
+
+        let matchTanggal = true;
+        if (filterTanggal && item.timestamp) {
+          const itemDate = new Date(item.timestamp);
+          if (!isNaN(itemDate.getTime())) {
+            const year = itemDate.getFullYear();
+            const month = String(itemDate.getMonth() + 1).padStart(2, '0');
+            const day = String(itemDate.getDate()).padStart(2, '0');
+            const formattedItemDate = `${year}-${month}-${day}`;
+            matchTanggal = formattedItemDate === filterTanggal;
+          }
+        }
+
+        return matchNama && matchProperty && matchTanggal;
+      });
+      renderPelanggaran(filteredPelanggaran);
+    }
+
+    // Trik Google Drive Thumbnail Generator (w400) untuk Menghemat RAM & Bandwidth
+    function formatFotoUrl(url, isThumbnail = true) {
+      if (!url || url === '-' || url.trim() === '' || url.includes('Gagal')) return null;
+
+      const strUrl = url.trim();
+
+      if (strUrl.startsWith('data:image')) {
+        return strUrl;
+      }
+
+      if (strUrl.includes('drive.google.com')) {
+        let fileId = '';
+        if (strUrl.includes('/file/d/')) {
+          fileId = strUrl.split('/file/d/')[1].split('/')[0];
+        } else if (strUrl.includes('id=')) {
+          fileId = strUrl.split('id=')[1].split('&')[0];
+        } else if (strUrl.includes('open?id=')) {
+          fileId = strUrl.split('open?id=')[1].split('&')[0];
+        }
+
+        if (fileId) {
+          return isThumbnail ? `https://lh3.googleusercontent.com/d/${fileId}=w400` : `https://lh3.googleusercontent.com/d/${fileId}`;
+        }
+      }
+
+      if (strUrl.startsWith('http')) {
+        return strUrl;
+      }
+
+      return null;
+    }
+
+    function renderPatroliWithPagination() {
+      const container = document.getElementById('galeri-container');
+      container.innerHTML = '';
+
+      if (currentFilteredPatroli.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Tidak ada laporan patroli ditemukan.</div>`;
+        document.getElementById('page-info-patroli').innerText = 'Halaman 0 dari 0';
+        document.getElementById('btn-prev-patroli').disabled = true;
+        document.getElementById('btn-next-patroli').disabled = true;
+        return;
+      }
+
+      const totalPages = Math.ceil(currentFilteredPatroli.length / ITEMS_PER_PAGE);
+      const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+      const endIdx = startIdx + ITEMS_PER_PAGE;
+      const pageItems = currentFilteredPatroli.slice(startIdx, endIdx);
+
+      pageItems.forEach(log => {
+        const card = document.createElement('div');
+        card.className = 'card-laporan';
+
+        const thumbUrl = formatFotoUrl(log.foto, true);
+        const fullUrl = formatFotoUrl(log.foto, false);
+        
+        // Menggunakan loading="lazy" & Thumbnail Generator agar Dasbor Super Ringan
+        const photoHtml = thumbUrl
+          ? `<img src="${thumbUrl}" loading="lazy" alt="Foto Patroli" onclick="openLightbox('${fullUrl}')" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'no-photo-badge\\'>Gagal memuat gambar Drive</div>';">`
+          : `<div class="no-photo-badge">Tidak ada dokumen foto</div>`;
+
+        const dateObj = new Date(log.timestamp);
+        const formattedTime = isNaN(dateObj.getTime()) ? log.timestamp : dateObj.toLocaleString('id-ID');
+
+        const patrolNotes = log.catatan_patroli || log.catatan || '-';
+        const showNotes = patrolNotes && patrolNotes !== '-' && patrolNotes !== 'undefined';
+
+        card.innerHTML = `
+          <div class="card-photo-box">
+            ${photoHtml}
+          </div>
+          <div class="card-body">
+            <span class="badge-type">${log.tipe || 'Aktivitas'}</span>
+            <div class="card-title">${log.nama || 'Petugas'}</div>
+            <div class="card-meta">
+              🏢 ${log.property || '-'}<br>
+              🆔 Shift: ${log.shift || '-'}<br>
+              🕒 ${formattedTime}
+            </div>
+            ${showNotes ? `<div class="card-notes"><b>Catatan:</b> ${patrolNotes}</div>` : ''}
+            ${log.koordinat ? `<div class="card-coords">📍 ${log.koordinat}</div>` : ''}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      document.getElementById('page-info-patroli').innerText = `Halaman ${currentPage} dari ${totalPages} (${currentFilteredPatroli.length} Laporan)`;
+      document.getElementById('btn-prev-patroli').disabled = currentPage === 1;
+      document.getElementById('btn-next-patroli').disabled = currentPage === totalPages;
+    }
+
+    function changePage(delta) {
+      const totalPages = Math.ceil(currentFilteredPatroli.length / ITEMS_PER_PAGE);
+      currentPage += delta;
+      if (currentPage < 1) currentPage = 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+      renderPatroliWithPagination();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderPelanggaran(logs) {
+      const tbody = document.getElementById('pelanggaran-tbody');
+      tbody.innerHTML = '';
+
+      if (logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 40px; color: var(--text-muted);">Tidak ada log pelanggaran area.</td></tr>`;
+        return;
+      }
+
+      logs.forEach(log => {
+        const dateObj = new Date(log.timestamp);
+        const formattedTime = isNaN(dateObj.getTime()) ? log.timestamp : dateObj.toLocaleString('id-ID');
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${formattedTime}</td>
+          <td><b>${log.nama || '-'}</b></td>
+          <td>${log.shift || '-'}</td>
+          <td>${log.property || '-'}</td>
+          <td><span class="badge-violation">${log.jarak || '-'}</span></td>
+          <td>${log.alasan || '-'}</td>
+          <td><code>${log.password || '-'}</code></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openLightbox(src) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox').classList.add('active');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+    }
+
+    function generateAndShowPassword() {
+      const randomIndex = Math.floor(Math.random() * PASSWORD_LIST.length);
+      const selectedPassword = PASSWORD_LIST[randomIndex];
+
+      document.getElementById('pwd-display').innerText = selectedPassword;
+      document.getElementById('btn-copy-pwd').innerText = 'Salin Password';
+      document.getElementById('pwd-modal').classList.add('active');
+    }
+
+    function closePasswordModal() {
+      document.getElementById('pwd-modal').classList.remove('active');
+    }
+
+    function copyPasswordToClipboard() {
+      const passwordText = document.getElementById('pwd-display').innerText;
+      navigator.clipboard.writeText(passwordText).then(() => {
+        document.getElementById('btn-copy-pwd').innerText = '✓ Tersalin!';
+        setTimeout(() => {
+          document.getElementById('btn-copy-pwd').innerText = 'Salin Password';
+        }, 2000);
+      }).catch(err => {
+        console.error('Gagal menyalin:', err);
+      });
+    }
+</script>
+</body>
+</html>
